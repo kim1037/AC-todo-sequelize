@@ -1,6 +1,7 @@
 // Include packages and define server related variables
 const express = require("express");
 const exphbs = require("express-handlebars");
+const routes = require("./routes");
 const methodOverride = require("method-override");
 const bcrypt = require("bcryptjs");
 const app = express();
@@ -12,14 +13,15 @@ app.set("view engine", "hbs");
 
 // setting body-parser
 app.use(express.urlencoded({ extended: true }));
+
+//setting middleware
 app.use(methodOverride("_method"));
 app.use(express.static("public"));
-//use middleware
+
 
 // setting routes
-app.get("/", (req, res) => {
-  res.send("hello world");
-});
+app.use(routes)
+
 app.listen(PORT, () => {
   console.log(`App is running on http://localhost:${PORT}`);
 });
