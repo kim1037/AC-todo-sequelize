@@ -2,10 +2,9 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const bcrypt = require('bcryptjs')
-//Include models
+const bcrypt = require("bcryptjs");
+// Include models
 const db = require("../../models");
-const Todo = db.Todo;
 const User = db.User;
 
 router.get("/login", (req, res) => {
@@ -27,10 +26,27 @@ router.get("/register", (req, res) => {
 
 router.post("/register", (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
+  const errors = [];
+  if (!name || !email || !password || !confirmPassword) {
+    errors.push({ message: "All fields are required." });
+  }
+  if (password !== confirmPassword) {
+    errors.push({ message: "Password and confirmPassword must be same." });
+  }
+  if (errors.length) {
+    return res.render("register", {
+      errors,
+      name,
+      email,
+      password,
+      confirmPassword,
+    });
+  }
   User.findOne({ where: { email } }).then((user) => {
     if (user) {
-      console.log("User already exists");
+      errors.push({ message: `The email already exists.` });
       return res.render("register", {
+        errors,
         name,
         email,
         password,
@@ -53,7 +69,9 @@ router.post("/register", (req, res) => {
 });
 
 router.get("/logout", (req, res) => {
-  res.send("logout");
+  req.logout();
+  req.flash("success_msg", "Logout success!");
+  res.redirect("/users/login");
 });
 
 module.exports = router;
