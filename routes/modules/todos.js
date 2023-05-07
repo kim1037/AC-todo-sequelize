@@ -41,12 +41,10 @@ router.put("/:id", (req, res) => {
   const UserId = req.user.id;
   const id = req.params.id;
   const { name, isDone } = req.body;
-  // console.log(name.length);
-  // if (name.length === 0) {
-  //   console.log('測試是否有到此行')
-  //   res.locals.warning_msg = "Todo should not be empty!";
-  //   return res.redirect("/todos/edit");
-  // } 
+  if (name.length === 0) {
+    req.flash("warning_msg", "Todo should not be empty!");
+    return res.redirect(`/todos/${id}/edit`);
+  } 
   return Todo.findOne({ where: { id, UserId } })
     .then((todo) => {
       //同todo.update({name,isDone: isDone === "on"})
