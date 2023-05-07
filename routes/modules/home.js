@@ -3,13 +3,10 @@ const router = express.Router();
 //Include models
 const db = require("../../models");
 const Todo = db.Todo;
-const User = db.User;
 
 router.get("/", (req, res) => {
-  return Todo.findAll({
-    raw: true,
-    nest: true,
-  })
+  const UserId = req.user.id;
+  return Todo.findAll({ where: { UserId }, raw: true, nest: true })
     .then((todos) => {
       return res.render("index", { todos: todos });
     })
@@ -17,6 +14,5 @@ router.get("/", (req, res) => {
       return res.status(422).json(error);
     });
 });
-
 
 module.exports = router;
